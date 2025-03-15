@@ -5,6 +5,7 @@ class ApiService {
   final Dio dio;
   final Function(String)? onAuthFailure;
   final Function(String)? onError;
+  final  Future Function() getToken;
 
   ApiService({
     required String baseUrl,
@@ -12,7 +13,7 @@ class ApiService {
     Duration receiveTimeout = const Duration(seconds: 10),
     this.onAuthFailure,
     this.onError,
-    String? token,
+    required this.getToken,
     bool isAuth = false,
   }) : dio = Dio(BaseOptions(
     baseUrl: baseUrl,
@@ -21,6 +22,7 @@ class ApiService {
   )) {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
+        final token = await getToken();
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
