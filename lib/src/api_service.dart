@@ -5,7 +5,8 @@ class ApiService {
   final Dio dio;
   final Function(String)? onAuthFailure;
   final Function(String)? onError;
-  final  Future Function() getToken;
+  final Future Function() getToken;
+  final bool enableLogError;
 
   ApiService({
     required String baseUrl,
@@ -15,11 +16,12 @@ class ApiService {
     this.onError,
     required this.getToken,
     bool isAuth = false,
+    this.enableLogError = false,
   }) : dio = Dio(BaseOptions(
-    baseUrl: baseUrl,
-    connectTimeout: connectTimeout,
-    receiveTimeout: receiveTimeout,
-  )) {
+          baseUrl: baseUrl,
+          connectTimeout: connectTimeout,
+          receiveTimeout: receiveTimeout,
+        )) {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = await getToken();
@@ -50,7 +52,8 @@ class ApiService {
     }
   }
 
-  Future<Response> getRequest(String path, {Map<String, dynamic>? query}) async {
+  Future<Response> getRequest(String path,
+      {Map<String, dynamic>? query}) async {
     try {
       return await dio.get(path, queryParameters: query);
     } catch (e) {
@@ -59,7 +62,8 @@ class ApiService {
     }
   }
 
-  Future<Response> putRequest(String endpoint, Map<String, dynamic> data) async {
+  Future<Response> putRequest(
+      String endpoint, Map<String, dynamic> data) async {
     try {
       return await dio.put(endpoint, data: data);
     } catch (e) {
@@ -68,7 +72,8 @@ class ApiService {
     }
   }
 
-  Future<Response> deleteRequest(String endpoint, {Map<String, dynamic>? data}) async {
+  Future<Response> deleteRequest(String endpoint,
+      {Map<String, dynamic>? data}) async {
     try {
       return await dio.delete(endpoint, queryParameters: data);
     } catch (e) {
@@ -78,6 +83,8 @@ class ApiService {
   }
 
   void logError(dynamic error, StackTrace stackTrace) {
+    if (!enableLogError) return;
+
     if (kDebugMode) {
       debugPrint('Error: $error');
       debugPrint('Stack Trace: $stackTrace');

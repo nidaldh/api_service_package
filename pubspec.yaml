@@ -1,6 +1,6 @@
 name: api_service_package
 description: A reusable API service package for HTTP requests
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
