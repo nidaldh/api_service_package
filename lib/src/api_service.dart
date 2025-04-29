@@ -62,6 +62,16 @@ class ApiService {
     }
   }
 
+  Future<Response> patchRequest(
+      String endpoint, Map<String, dynamic> data) async {
+    try {
+      return await dio.patch(endpoint, data: data);
+    } catch (e) {
+      logError(e, StackTrace.current);
+      rethrow;
+    }
+  }
+
   Future<Response> putRequest(
       String endpoint, Map<String, dynamic> data) async {
     try {
